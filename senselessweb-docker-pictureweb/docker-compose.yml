@@ -1,0 +1,44 @@
+version: "2"
+services:
+
+  # Database
+  pictureweb-mongo:
+    image: mongo
+    ports:
+     - "27017:27017"
+    env_file:
+     - pictureweb-environment
+    volumes:
+     - "${SW_CONTAINERDATA}/pictureweb/db:/data/db"
+    restart: always
+     
+  # Services 
+  pictureweb-web:
+    image: tvvk/pictureweb-web
+    links:
+     - "pictureweb-mongo"    
+    ports:
+     - "80:8080"
+    env_file:
+     - pictureweb-environment
+    volumes:
+     - "${SW_CONTAINERDATA}/pictureweb/images:/data/storage"
+    restart: always
+  pictureweb-flickr-fetcher:
+    image: tvvk/pictureweb-flickr-fetcher
+    links:
+     - "pictureweb-mongo"    
+    volumes:
+     - "${SW_CONTAINERDATA}/pictureweb/images:/data/storage"
+    env_file:
+     - pictureweb-environment
+    restart: always
+  pictureweb-flickr-downloader:
+    image: tvvk/pictureweb-flickr-downloader
+    links:
+     - "pictureweb-mongo"    
+    env_file:
+     - pictureweb-environment
+    volumes:
+     - "${SW_CONTAINERDATA}/pictureweb/images:/data/storage"
+    restart: always     

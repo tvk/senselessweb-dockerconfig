@@ -1,4 +1,10 @@
 version: "2"
+
+networks:
+  global:
+    external:
+      name: global-network
+
 services:
 
   # Database
@@ -6,39 +12,37 @@ services:
     image: mongo
     ports:
      - "27017:27017"
-    env_file:
-     - pictureweb-environment
-    volumes:
-     - "${SW_CONTAINERDATA}/pictureweb/db:/data/db"
     restart: always
+    env_file: 
+     - pictureweb-environment
      
-  # Services 
+  # Web
   pictureweb-web:
     image: tvvk/pictureweb-web
+    networks:
+     - "global"
+     - "default"
     links:
      - "pictureweb-mongo"    
     ports:
-     - "80:8080"
-    env_file:
-     - pictureweb-environment
-    volumes:
-     - "${SW_CONTAINERDATA}/pictureweb/images:/data/storage"
+     - "8081:8080"
     restart: always
+    env_file:
+     - "pictureweb-environment"
+
+  # Services
   pictureweb-flickr-fetcher:
     image: tvvk/pictureweb-flickr-fetcher
     links:
      - "pictureweb-mongo"    
-    volumes:
-     - "${SW_CONTAINERDATA}/pictureweb/images:/data/storage"
-    env_file:
-     - pictureweb-environment
     restart: always
+    env_file:
+     - "pictureweb-environment"
   pictureweb-flickr-downloader:
     image: tvvk/pictureweb-flickr-downloader
     links:
      - "pictureweb-mongo"    
+    restart: always
     env_file:
-     - pictureweb-environment
-    volumes:
-     - "${SW_CONTAINERDATA}/pictureweb/images:/data/storage"
-    restart: always     
+     - "pictureweb-environment"
+

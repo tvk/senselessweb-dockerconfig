@@ -1,15 +1,21 @@
 version: "2"
+
+networks:
+  global:
+    external:
+      name: global-network
+
 services:
 
   jenkins:
     build:
       context: .
       dockerfile: Dockerfile-jenkins
-    ports:
-     - "8082:8080"
-     - "50000:50000"
-    volumes:
-     - "${SW_CONTAINERDATA}/jenkins:/var/jenkins_home"
-     - /var/run/docker.sock:/var/run/docker.sock
+    expose:
+     - "8080"
     restart: always
-
+    volumes:
+     - "${CONTAINERDATA}/jenkins:/var/jenkins_home"
+     - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+     - global

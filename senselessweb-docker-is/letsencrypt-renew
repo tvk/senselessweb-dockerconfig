@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#
+# Run this as root!
+#
+
+su -l thomas -c 'cd /home/thomas/container/senselessweb-docker-is && docker-compose stop'
+letsencrypt renew --agree-tos
+su -l thomas -c 'cd /home/thomas/container/senselessweb-docker-is && docker-compose start'

@@ -16,6 +16,7 @@ services:
     external_links:
      - "jenkins"
      - "pictureweb-web"
+     - "pictureweb-eureka"
     networks:
      - "global"
     restart: always

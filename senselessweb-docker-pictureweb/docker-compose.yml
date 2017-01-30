@@ -15,6 +15,17 @@ services:
     restart: always
     env_file: 
      - pictureweb-environment
+    volumes:
+     - "${CONTAINERDATA}/pictureweb/db:/data/db"
+  pictureweb-datastore:
+    image: tvvk/pictureweb-datastore
+    links:
+     - "pictureweb-mongo"
+    restart: always
+    env_file:
+     - "pictureweb-environment"
+    ports:
+     - "localhost:8081:8081"
      
   # Web
   pictureweb-web:
@@ -23,26 +34,23 @@ services:
      - "global"
      - "default"
     links:
-     - "pictureweb-mongo"    
+     - "pictureweb-datastore"    
     ports:
-     - "8081:8080"
+     - "8080:8080"
     restart: always
     env_file:
      - "pictureweb-environment"
+    volumes:
+     - "${CONTAINERDATA}/pictureweb/images:/data/storage"
+
 
   # Services
   pictureweb-flickr-fetcher:
     image: tvvk/pictureweb-flickr-fetcher
     links:
-     - "pictureweb-mongo"    
+     - "pictureweb-datastore"    
     restart: always
     env_file:
      - "pictureweb-environment"
-  pictureweb-flickr-downloader:
-    image: tvvk/pictureweb-flickr-downloader
-    links:
-     - "pictureweb-mongo"    
-    restart: always
-    env_file:
-     - "pictureweb-environment"
-
+    volumes:
+     - "${CONTAINERDATA}/pictureweb/images:/data/storage"
